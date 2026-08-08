@@ -47,7 +47,7 @@ telegram:
   # Or channel id (for private channels): -1001234567890
   channel_id: null
   # Session file will be created at first run via interactive login
-  session_name: "karmabot_session"
+  session_name: "/var/lib/karmabot/karmabot_session"
 
 # ─────────────────────────────────────────────────────────────
 # POSTING CADENCE

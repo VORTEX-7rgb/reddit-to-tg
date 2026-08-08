@@ -56,7 +56,7 @@ if [[ ! -f "$INSTALL_DIR/config.yaml" ]]; then
   cp "$INSTALL_DIR/config.example.yaml" "$INSTALL_DIR/config.yaml"
   echo "  -> Created config.yaml from example. EDIT IT before starting service."
 fi
-chmod 600 "$INSTALL_DIR/config.yaml"
+chmod 640 "$INSTALL_DIR/config.yaml"
 chown -R "root:$SERVICE_USER" "$INSTALL_DIR"
 chmod -R o-rwx "$INSTALL_DIR"
 
@@ -100,7 +100,7 @@ echo "  sudo -u $SERVICE_USER $INSTALL_DIR/venv/bin/python -m src.scheduler --co
 echo ""
 echo "It will prompt for the Telegram login code (sent to your phone)."
 echo "After successful login, the session file is saved at:"
-echo "  $(pwd)/${SERVICE_USER}_session.session"
+echo "  /var/lib/karmabot/karmabot_session.session"
 echo ""
 echo "Then start the timer:"
 echo "  sudo systemctl enable --now karmabot.timer"
