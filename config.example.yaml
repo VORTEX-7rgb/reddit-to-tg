@@ -1,0 +1,147 @@
+# Telegram Reddit Video Pipeline - Configuration
+# Copy this file to config.yaml and fill in your credentials.
+# NEVER commit config.yaml to git. Keep it chmod 600.
+
+# ─────────────────────────────────────────────────────────────
+# REDDIT API (free tier, 100 req/min)
+# Get credentials at: https://www.reddit.com/prefs/apps
+# Create a "script" type app. Fill redirect_uri with http://localhost
+# ─────────────────────────────────────────────────────────────
+# Leave client_id and client_secret as "" to use public HTTP endpoints without API keys!
+reddit:
+  client_id: ""
+  client_secret: ""
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+  subreddits:
+      - "lafda"
+      - "kalesh"
+      -  "funny" 
+      - "Unexpected"
+      - "Whatcouldgowrong"
+      - "therewasanattempt"
+      - "instantkarma"
+      - "PerfectlyCutScreams"
+      - "ContagiousLaughter"
+      - "AnimalsBeingDerps"
+      - "aww"
+
+    
+  # Min upvotes required to consider a post (filters low-quality content)
+  min_score: 500
+  # Max post age in hours (don't post stale content)
+  max_age_hours: 48
+  # Only video-hosted posts (hosted: reddit video, gfycat, redgifs, imgur .mp4)
+  video_only: true
+  # Max duration in seconds (Telegram video limit is ~2 minutes for best retention)
+  max_duration_sec: 120
+
+# ─────────────────────────────────────────────────────────────
+# TELEGRAM (use your OWN user account via Telethon for best results)
+# Get api_id and api_hash at: https://my.telegram.org/apps
+# ─────────────────────────────────────────────────────────────
+telegram:
+  api_id: 31682569
+  api_hash: "6ff6ec3eda559be7d2f491d24b7c4788"
+  phone_number: "+917328055707"
+  channel_username: "lafdafightgoreviolent"
+  # Or channel id (for private channels): -1001234567890
+  channel_id: null
+  # Session file will be created at first run via interactive login
+  session_name: "karmabot_session"
+
+# ─────────────────────────────────────────────────────────────
+# POSTING CADENCE
+# ─────────────────────────────────────────────────────────────
+schedule:
+  # Posts 1 video every N hours (cron-style on systemd timer)
+  interval_hours: 2
+  # Max posts per 24h (hard cap to avoid spam detection)
+  max_daily_posts: 12
+  # Quiet hours — do not post during these UTC hours
+  # Empty list = post 24/7. Recommended: skip low-traffic hours
+  quiet_hours_utc: []
+  # Random jitter in minutes (±N) to make posts look human, not bot-exact
+  jitter_minutes: 15
+
+# ─────────────────────────────────────────────────────────────
+# CONTENT SAFETY FILTER
+# ─────────────────────────────────────────────────────────────
+safety:
+  # Reject posts whose title contains any of these (case-insensitive)
+  banned_words:
+    - "gore"
+    - "beheading"
+    - "execution"
+    - "isis"
+    - "terrorist"
+    - "cp"
+    - "csam"
+    - "pedo"
+    - "nsfl"
+    - "death"
+    - "killed"
+    - "dies"
+    - "dead "
+  # Reject posts tagged NSFW by Reddit (overrides everything)
+  reject_nsfw: true
+  # Reject posts from quarantined/banned subreddits
+  reject_quarantined: true
+  # Profanity filter on caption (better-profanity library)
+  censor_profanity: true
+  # Min video resolution (0 = no minimum height limit, allow low quality/360p clips)
+  min_height: 0
+  # Reject vertical videos longer than 60s (retention drops)
+  max_vertical_duration_sec: 60
+
+# ─────────────────────────────────────────────────────────────
+# CREDIT / CAPTION STYLE
+# ─────────────────────────────────────────────────────────────
+caption:
+  # Template uses {title}, {author}, {subreddit}, {url}, {hashtags}
+  # Supports Telegram HTML formatting: <b>bold</b>, <i>italic</i>, <a href="url">link</a>
+  template: |
+    <b>{title}</b>
+
+    via u/{author} on <a href="{url}">r/{subreddit}</a>
+
+    {hashtags}
+  # Hashtags pulled from a rotating pool. Pick 3-5 per post.
+  hashtag_pool:
+    - "#funny"
+    - "#fails"
+    - "#karma"
+    - "#unexpected"
+    - "#viral"
+    - "#memes"
+    - "#reddit"
+    - "#shorts"
+    - "#entertainment"
+    - "#dailyclips"
+    - "#lol"
+    - "#moment"
+  hashtags_per_post: 4
+  # Channel footer added to every post (builds brand)
+  channel_footer: ""
+  # Max caption length (Telegram hard limit is 1024)
+  max_length: 800
+
+# ─────────────────────────────────────────────────────────────
+# STORAGE
+# ─────────────────────────────────────────────────────────────
+storage:
+  # Working directory for downloaded videos, logs, state
+  data_dir: "/var/lib/karmabot"
+  # Keep N days of posted videos, then auto-delete to save disk
+  retain_days: 7
+  # Max disk usage in MB before cleanup triggers
+  max_disk_mb: 2000
+
+# ─────────────────────────────────────────────────────────────
+# LOGGING
+# ─────────────────────────────────────────────────────────────
+logging:
+  level: "INFO"        # DEBUG / INFO / WARNING / ERROR
+  file: "/var/log/karmabot/bot.log"
+  # Rotate log files at this size
+  max_size_mb: 10
+  keep_backups: 5

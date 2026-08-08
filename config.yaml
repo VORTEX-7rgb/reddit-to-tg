@@ -1,0 +1,113 @@
+# Telegram Reddit Video Pipeline - Configuration
+# Created for Karmabot pipeline
+
+# ─────────────────────────────────────────────────────────────
+# REDDIT CONFIGURATION
+# Empty client_id and client_secret use public HTTP JSON scraping (no API keys required!)
+# ─────────────────────────────────────────────────────────────
+reddit:
+  client_id: ""
+  client_secret: ""
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  subreddits:
+    - "lafda"
+    - "kalesh"
+    - "funny"
+    - "Unexpected"
+    - "Whatcouldgowrong"
+    - "therewasanattempt"
+    - "instantkarma"
+    - "PerfectlyCutScreams"
+    - "ContagiousLaughter"
+    - "AnimalsBeingDerps"
+    - "aww"
+  min_score: 300
+  max_age_hours: 48
+  video_only: true
+  max_duration_sec: 120
+
+# ─────────────────────────────────────────────────────────────
+# TELEGRAM CREDENTIALS
+# Get api_id and api_hash at: https://my.telegram.org/apps
+# ─────────────────────────────────────────────────────────────
+telegram:
+  api_id: 31682569
+  api_hash: "6ff6ec3eda559be7d2f491d24b7c4788"
+  phone_number: "+917328055707"
+  channel_username: "lafdafightgoreviolent"
+  channel_id: null
+  session_name: "karmabot_session"
+
+# ─────────────────────────────────────────────────────────────
+# POSTING CADENCE
+# ─────────────────────────────────────────────────────────────
+schedule:
+  interval_hours: 2
+  max_daily_posts: 12
+  quiet_hours_utc: []
+  jitter_minutes: 15
+
+# ─────────────────────────────────────────────────────────────
+# CONTENT SAFETY FILTER
+# ─────────────────────────────────────────────────────────────
+safety:
+  banned_words:
+    - "gore"
+    - "beheading"
+    - "execution"
+    - "isis"
+    - "terrorist"
+    - "cp"
+    - "csam"
+    - "pedo"
+    - "nsfl"
+    - "death"
+    - "killed"
+    - "dies"
+    - "dead "
+  reject_nsfw: true
+  reject_quarantined: true
+  censor_profanity: true
+  min_height: 0
+  max_vertical_duration_sec: 60
+
+# ─────────────────────────────────────────────────────────────
+# CAPTION & CREDIT STYLE
+# ─────────────────────────────────────────────────────────────
+caption:
+  template: |
+    <b>{title}</b>
+
+    via u/{author} on <a href="{url}">r/{subreddit}</a>
+
+    {hashtags}
+  hashtag_pool:
+    - "#funny"
+    - "#fails"
+    - "#karma"
+    - "#unexpected"
+    - "#viral"
+    - "#memes"
+    - "#reddit"
+    - "#shorts"
+    - "#entertainment"
+    - "#dailyclips"
+    - "#lol"
+    - "#moment"
+  hashtags_per_post: 4
+  channel_footer: ""
+  max_length: 800
+
+# ─────────────────────────────────────────────────────────────
+# STORAGE & LOGGING
+# ─────────────────────────────────────────────────────────────
+storage:
+  data_dir: "/var/lib/karmabot"
+  retain_days: 7
+  max_disk_mb: 2000
+
+logging:
+  level: "INFO"
+  file: "/var/log/karmabot/bot.log"
+  max_size_mb: 10
+  keep_backups: 5

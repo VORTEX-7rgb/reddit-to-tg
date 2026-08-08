@@ -1,0 +1,45 @@
+[Unit]
+Description=Karmabot — Reddit to Telegram Video Pipeline
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=karmabot
+Group=karmabot
+WorkingDirectory=/opt/karmabot
+Environment=PYTHONUNBUFFERED=1
+Environment=KARMABOT_CONFIG=/opt/karmabot/config.yaml
+# Run a single cycle and exit. systemd timer will re-invoke.
+ExecStart=/opt/karmabot/venv/bin/python -m src.scheduler --config /opt/karmabot/config.yaml
+
+# Hard limits to prevent runaway
+TimeoutStartSec=300
+MemoryMax=512M
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=karmabot
+
+# Security hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/karmabot /var/log/karmabot
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+LockPersonality=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+RemoveIPC=yes
+CapabilityBoundingSet=
+ AmbientCapabilities=
+
+[Install]
+WantedBy=multi-user.target

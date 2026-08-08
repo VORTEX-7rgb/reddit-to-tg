@@ -1,0 +1,9 @@
+praw==7.7.1
+telethon==1.36.0
+yt-dlp==2024.10.7
+ffmpeg-python==0.2.0
+Pillow==10.4.0
+better-profanity==0.7.0
+PyYAML==6.0.2
+requests==2.32.3
+python-dotenv==1.0.1

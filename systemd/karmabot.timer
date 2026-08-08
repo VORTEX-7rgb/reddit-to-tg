@@ -1,0 +1,16 @@
+[Unit]
+Description=Run Karmabot every 2 hours
+Requires=karmabot.service
+
+[Timer]
+# Run every 2 hours, but with random delay up to 15 min for humanization
+OnCalendar=*-*-* 00/2:00:00
+# RandomizedDelaySec adds anti-ban jitter at the systemd level
+RandomizedDelaySec=900
+# If a run was missed (server was down), don't fire catch-up runs
+Persistent=false
+# Avoid running two instances concurrently
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target
