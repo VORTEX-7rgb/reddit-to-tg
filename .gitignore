@@ -1,0 +1,19 @@
+# Configuration with private secrets
+config.yaml
+
+# Session files & state
+*.session
+*.session-journal
+state.json
+data/
+
+# Logs
+*.log
+bot.log
+
+# Python cache & virtualenv
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
