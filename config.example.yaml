@@ -40,10 +40,10 @@ reddit:
 # Get api_id and api_hash at: https://my.telegram.org/apps
 # ─────────────────────────────────────────────────────────────
 telegram:
-  api_id: 31682569
-  api_hash: "6ff6ec3eda559be7d2f491d24b7c4788"
-  phone_number: "+917328055707"
-  channel_username: "lafdafightgoreviolent"
+  api_id: 123456                  # integer, not string (get at https://my.telegram.org/apps)
+  api_hash: "your_api_hash_here"
+  phone_number: "+1234567890"   # needed only for first-time login
+  channel_username: "YourChannelUsername"   # without @, must be public & you must be admin
   # Or channel id (for private channels): -1001234567890
   channel_id: null
   # Session file will be created at first run via interactive login
