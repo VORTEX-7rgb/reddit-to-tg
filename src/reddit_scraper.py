@@ -98,32 +98,46 @@ class RedditScraper:
             yield candidate
 
     def _iter_candidates_http(self, already_posted: set[str]) -> Iterator[ClipCandidate]:
-        sub_str = "+".join(self.cfg.subreddits)
-        url = f"https://www.reddit.com/r/{sub_str}/top.json?t=day&limit=100"
+        """Fetch candidates per-subreddit via HTTP JSON. Log advice if Reddit 403s datacenter IP."""
         headers = {
-            "User-Agent": self.cfg.user_agent or "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            "User-Agent": self.cfg.user_agent or "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         }
-        log.info("Scraping public HTTP JSON from %s ...", url)
-        try:
-            r = requests.get(url, headers=headers, timeout=15)
-            r.raise_for_status()
-            data = r.json()
-            items = data.get("data", {}).get("children", [])
-            fetched = len(items)
-            yielded = 0
-            for item in items:
-                p = item.get("data", {})
-                post_id = p.get("id")
-                if not post_id or post_id in already_posted:
-                    continue
-                candidate = self._json_dict_to_candidate(p)
-                if candidate is None or not self._passes_filters(candidate):
-                    continue
-                yielded += 1
-                yield candidate
-            log.info("Fetched %d posts from Reddit HTTP JSON, yielded %d candidates.", fetched, yielded)
-        except Exception as e:
-            log.error("HTTP JSON scraper failed: %s", e)
+        yielded = 0
+        for sub in self.cfg.subreddits:
+            urls = [
+                f"https://www.reddit.com/r/{sub}/top.json?t=day&limit=25",
+                f"https://www.reddit.com/r/{sub}/hot.json?limit=25",
+            ]
+            for url in urls:
+                log.info("Scraping public HTTP JSON: r/%s ...", sub)
+                try:
+                    r = requests.get(url, headers=headers, timeout=15)
+                    if r.status_code == 403:
+                        log.warning(
+                            "Reddit blocked unauthenticated request (HTTP 403) for r/%s. "
+                            "Add free Reddit API keys (client_id & client_secret from https://www.reddit.com/prefs/apps) "
+                            "to config.yaml to bypass cloud IP blocks.", sub
+                        )
+                        break
+                    r.raise_for_status()
+                    data = r.json()
+                    items = data.get("data", {}).get("children", [])
+                    for item in items:
+                        p = item.get("data", {})
+                        post_id = p.get("id")
+                        if not post_id or post_id in already_posted:
+                            continue
+                        candidate = self._json_dict_to_candidate(p)
+                        if candidate is None or not self._passes_filters(candidate):
+                            continue
+                        yielded += 1
+                        yield candidate
+                    # If we got candidates for this sub, move to next sub
+                    break
+                except Exception as e:
+                    log.error("HTTP JSON scraper failed for r/%s: %s", sub, e)
+
+        log.info("Finished public HTTP JSON scrape. Yielded %d total candidates.", yielded)
 
     def _json_dict_to_candidate(self, p: dict) -> ClipCandidate | None:
         """Convert a Reddit JSON dict object to a ClipCandidate."""
